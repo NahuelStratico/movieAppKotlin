@@ -9,7 +9,14 @@ import com.nahuel.movieapp.R
 import com.nahuel.movieapp.data.modelApi.Movie
 import com.nahuel.movieapp.databinding.PopularMovieItemBinding
 
-class PopularMoviesAdapter(var movies: List<Movie> ) : RecyclerView.Adapter<ListMovieHolder>() {
+class PopularMoviesAdapter(
+    private var movies: List<Movie>,
+    private val itemClickListener: OnPopularMovieClickListener
+    ) : RecyclerView.Adapter<PopularMoviesAdapter.ListMovieHolder>() {
+
+    interface OnPopularMovieClickListener{
+        fun onItemClick(movie: Movie)
+    }
 
    // Pinto la vista en Recycler
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListMovieHolder {
@@ -23,22 +30,28 @@ class PopularMoviesAdapter(var movies: List<Movie> ) : RecyclerView.Adapter<List
     // Este metodo pasa por cada item y llama a function viewHolder
     override fun onBindViewHolder(holder: ListMovieHolder, position: Int) {
         val movie = movies[position]
-        holder.render(movie)
+        holder.bind(movie)
+    }
+
+    inner class ListMovieHolder(view: View): RecyclerView.ViewHolder(view) {
+
+        private val binding = PopularMovieItemBinding.bind(view)
+
+        fun bind(movie: Movie) {
+            //binding.tvTitle.text = movie.title
+            binding.ivItem.setOnClickListener { itemClickListener.onItemClick(movie) }
+
+            Glide.with(binding.ivItem.context)
+                .load("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
+                .into(binding.ivItem)
+
+        }
+
     }
 
 }
 
-class ListMovieHolder(view: View): RecyclerView.ViewHolder(view) {
-
-    private val binding = PopularMovieItemBinding.bind(view)
-
-    fun render(movie: Movie) {
-        //binding.tvTitle.text = movie.title
-        Glide.with(binding.ivItem.context)
-            .load("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
-            .into(binding.ivItem)
 
 
-    }
 
-}
+

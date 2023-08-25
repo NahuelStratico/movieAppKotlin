@@ -1,5 +1,6 @@
 package com.nahuel.movieapp.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -18,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity(), OnQueryTextListener {
+class MainActivity : AppCompatActivity(), OnQueryTextListener, PopularMoviesAdapter.OnPopularMovieClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter : PopularMoviesAdapter
@@ -36,23 +37,19 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         setContentView(binding.root)
         binding.SearchView.setOnQueryTextListener(this)
 
-
-
         popularMoviesRecycler()
         nowPlayingRecycler()
         searchMovieAdapter()
 
-
+        //Show Popular and Nowplaying
         CoroutineScope(Dispatchers.IO).launch {
             val apiKey = getString(R.string.api_key)
             val popularMovies = MovieRepository.service.listPopularMovies(apiKey)
             val nowPlayingMovies = MovieRepository.service.nowPlayingMovies(apiKey)
-            val body = popularMovies.execute().body()
-            val nowPlaying = nowPlayingMovies.execute().body()
             runOnUiThread {
-                if (body != null ){
-                    val movie = body?.results ?: emptyList()
-                    val nowPlaying = nowPlaying?.results ?: emptyList()
+                if (popularMovies != null && nowPlayingMovies !=null){
+                    val movie = popularMovies.results
+                    val nowPlaying = nowPlayingMovies.results
                     Log.d("popular", "$movie")
                     Log.d("nowPlaying", "$nowPlaying")
                     movieItem.clear()
@@ -61,14 +58,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                     nowPlayingItem.addAll(nowPlaying)
                     adapter.notifyDataSetChanged()
                     nowPlayingAdapter.notifyDataSetChanged()
-                    showToast()
 
-
-                    //Log.i("Nahuel", "${moviesAdapter.movies}")
                     Log.i("Nahuel", "Funciona la app")
                 }
                 else {
-                    showToastError()
                     Log.e("Nahuel", "No funciona la app")
                 }
             }
@@ -76,10 +69,9 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
     }
 
-
     //Recycler Popular Movies
     private fun popularMoviesRecycler() {
-        adapter = PopularMoviesAdapter(movieItem)
+        adapter = PopularMoviesAdapter(movieItem, this)
         binding.RVList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.RVList.adapter = adapter
     }
@@ -98,18 +90,15 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         binding.rvSearch.adapter = searchMovieAdapter
     }
 
+    //Search Movie
     private fun searchByMovie(query: String){
-        Log.i("nahuel","estoy dentro")
         CoroutineScope(Dispatchers.IO).launch {
             val apiKey = getString(R.string.api_key)
-            val call = MovieRepository.service.searchMovie("search/movie?query=$query&api_key=$apiKey")
-            val nameMovie = call.execute().body()
-            Log.d("search", "$nameMovie")
-            Log.e("error", "hay un error")
+            val queryMovie = MovieRepository.service.searchMovie("search/movie?query=$query&api_key=$apiKey")
+            Log.d("search", "$queryMovie")
             runOnUiThread {
-                if (nameMovie != null) {
-                    val movie = nameMovie?.results ?: emptyList()
-                    Log.d("search", "$movie")
+                if (queryMovie != null) {
+                    val movie = queryMovie.results
                     searchMovieItem.clear()
                     searchMovieItem.addAll(movie)
                     searchMovieAdapter.notifyDataSetChanged()
@@ -119,6 +108,13 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                 hideKeyBoard()
             }
         }
+    }
+
+    override fun onItemClick(movie: Movie) {
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra(DetailActivity.EXTRA_MOVIE, movie)
+        startActivity(intent)
+
     }
 
     private fun hideKeyBoard() {
@@ -140,12 +136,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
 
     private fun showToastError() {
-        Toast.makeText(this, "Hubo un error", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
     }
 
-    private fun showToast() {
-        Toast.makeText(this, "la api se pinta", Toast.LENGTH_LONG).show()
-    }
+
 
 }
 
