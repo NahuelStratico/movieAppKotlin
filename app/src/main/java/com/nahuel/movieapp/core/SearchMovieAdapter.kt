@@ -9,7 +9,14 @@ import com.nahuel.movieapp.R
 import com.nahuel.movieapp.data.modelApi.Movie
 import com.nahuel.movieapp.databinding.SearchMovieItemBinding
 
-class SearchMovieAdapter(var movies: List<Movie>) : RecyclerView.Adapter<SearchMovieHolder>() {
+class SearchMovieAdapter(
+    private var movies: List<Movie>,
+    private val itemClickSearchListener: OnItemClickSearchListener
+    ) : RecyclerView.Adapter<SearchMovieAdapter.SearchMovieHolder>() {
+
+    interface OnItemClickSearchListener{
+        fun onClickSearch(movie: Movie)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchMovieHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -23,15 +30,18 @@ class SearchMovieAdapter(var movies: List<Movie>) : RecyclerView.Adapter<SearchM
         holder.render(movie)
     }
 
-}
+    inner class SearchMovieHolder(view:View) : RecyclerView.ViewHolder(view){
 
-class SearchMovieHolder(view:View) : RecyclerView.ViewHolder(view){
+        private val binding =  SearchMovieItemBinding.bind(view)
 
-    private val binding =  SearchMovieItemBinding.bind(view)
+        fun render(movie: Movie){
+            binding.ivSearchItem.setOnClickListener { itemClickSearchListener.onClickSearch(movie) }
 
-    fun render(movie: Movie){
             Glide.with(binding.ivSearchItem.context)
                 .load("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
                 .into(binding.ivSearchItem)
+        }
     }
+
 }
+

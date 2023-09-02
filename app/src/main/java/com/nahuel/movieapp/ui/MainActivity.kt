@@ -26,7 +26,13 @@ import kotlinx.coroutines.launch
 import java.security.AccessController.getContext
 
 
-class MainActivity : AppCompatActivity(), OnQueryTextListener, PopularMoviesAdapter.OnPopularMovieClickListener {
+class MainActivity : AppCompatActivity(),
+    OnQueryTextListener,
+    PopularMoviesAdapter.OnPopularMovieClickListener,
+    NowPlayingAdapter.OnNowPlayingListener,
+    UpcomingAdapter.OnClickUpcomingListener,
+    TopRatedAdapter.OnItemClickTopRatedListener,
+    SearchMovieAdapter.OnItemClickSearchListener{
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter : PopularMoviesAdapter
@@ -216,28 +222,28 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener, PopularMoviesAdap
 
     //Recycler Now Playing
     private fun nowPlayingRecycler() {
-        nowPlayingAdapter = NowPlayingAdapter(nowPlayingItem)
+        nowPlayingAdapter = NowPlayingAdapter(nowPlayingItem, this)
         binding.rvNowPlaying.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false)
         binding.rvNowPlaying.adapter = nowPlayingAdapter
     }
 
     //Init Upcoming Recycler
     private fun initUpcomingRecycler() {
-        upcomingAdapter = UpcomingAdapter(upcomingItem)
+        upcomingAdapter = UpcomingAdapter(upcomingItem, this)
         binding.rvUpcoming.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false)
         binding.rvUpcoming.adapter = upcomingAdapter
     }
 
     //init TopRated Recycler
     private fun initTopRatedRecycler(){
-        topRatedAdapter = TopRatedAdapter(topRatedItem)
+        topRatedAdapter = TopRatedAdapter(topRatedItem, this)
         binding.rvTopRated.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false)
         binding.rvTopRated.adapter = topRatedAdapter
     }
 
     //Search Movie Recycler
     private fun searchMovieAdapter() {
-        searchMovieAdapter = SearchMovieAdapter(searchMovieItem)
+        searchMovieAdapter = SearchMovieAdapter(searchMovieItem, this)
         binding.rvSearch.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false)
         binding.rvSearch.adapter = searchMovieAdapter
     }
@@ -277,11 +283,34 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener, PopularMoviesAdap
         }
     }
 
+    override fun onItemClickNowplaying(movie: Movie) {
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra(DetailActivity.EXTRA_MOVIE, movie)
+        startActivity(intent)
+    }
+
     override fun onItemClick(movie: Movie) {
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra(DetailActivity.EXTRA_MOVIE, movie)
         startActivity(intent)
+    }
 
+    override fun onItemClickUpcoming(movie: Movie) {
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra(DetailActivity.EXTRA_MOVIE, movie)
+        startActivity(intent)
+    }
+
+    override fun onClickSearch(movie: Movie) {
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra(DetailActivity.EXTRA_MOVIE, movie)
+        startActivity(intent)
+    }
+
+    override fun onItemTopRated(movie: Movie) {
+        val intent = Intent(this,DetailActivity::class.java)
+        intent.putExtra(DetailActivity.EXTRA_MOVIE, movie)
+        startActivity(intent)
     }
 
     private fun hideKeyBoard() {

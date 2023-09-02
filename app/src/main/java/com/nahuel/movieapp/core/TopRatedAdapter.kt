@@ -9,7 +9,14 @@ import com.nahuel.movieapp.R
 import com.nahuel.movieapp.data.modelApi.Movie
 import com.nahuel.movieapp.databinding.TopRatedItemBinding
 
-class TopRatedAdapter( private var movies: List<Movie>):RecyclerView.Adapter<TopRatedAdapter.TopRaterViewHolder>() {
+class TopRatedAdapter(
+    private var movies: List<Movie>,
+    private val itemClickTopRatedListener: OnItemClickTopRatedListener
+    ):RecyclerView.Adapter<TopRatedAdapter.TopRaterViewHolder>() {
+
+    interface OnItemClickTopRatedListener{
+        fun onItemTopRated(movie: Movie)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopRaterViewHolder {
         return TopRaterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.top_rated_item, parent,false))
@@ -26,6 +33,8 @@ class TopRatedAdapter( private var movies: List<Movie>):RecyclerView.Adapter<Top
         private val binding = TopRatedItemBinding.bind(view)
 
         fun render(movie: Movie){
+            binding.ivTopRated.setOnClickListener { itemClickTopRatedListener.onItemTopRated(movie) }
+
             Glide.with(binding.ivTopRated.context)
                 .load("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
                 .into(binding.ivTopRated)

@@ -9,7 +9,14 @@ import com.nahuel.movieapp.R
 import com.nahuel.movieapp.data.modelApi.Movie
 import com.nahuel.movieapp.databinding.NowPlayingItemBinding
 
-class NowPlayingAdapter(var movies: List<Movie>) : RecyclerView.Adapter<NowPlayingHolder>() {
+class NowPlayingAdapter(
+    private var movies: List<Movie>,
+    private val itemClickNowplayingListener: OnNowPlayingListener
+    ) : RecyclerView.Adapter<NowPlayingAdapter.NowPlayingHolder>() {
+
+    interface OnNowPlayingListener{
+        fun onItemClickNowplaying(movie: Movie)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NowPlayingHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -23,15 +30,19 @@ class NowPlayingAdapter(var movies: List<Movie>) : RecyclerView.Adapter<NowPlayi
         holder.render(movie)
     }
 
-}
+    inner class NowPlayingHolder(view: View): RecyclerView.ViewHolder(view){
 
-class NowPlayingHolder(view: View): RecyclerView.ViewHolder(view){
+        private val binding = NowPlayingItemBinding.bind(view)
 
-    private val binding = NowPlayingItemBinding.bind(view)
+        fun render(movie: Movie){
 
-    fun render(movie: Movie){
-        Glide.with(binding.ivNowPlaying.context)
-            .load("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
-            .into(binding.ivNowPlaying)
+            binding.ivNowPlaying.setOnClickListener { itemClickNowplayingListener.onItemClickNowplaying(movie) }
+
+            Glide.with(binding.ivNowPlaying.context)
+                .load("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
+                .into(binding.ivNowPlaying)
+        }
     }
+
 }
+

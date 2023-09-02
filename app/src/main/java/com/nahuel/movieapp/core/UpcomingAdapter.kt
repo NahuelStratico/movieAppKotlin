@@ -9,7 +9,14 @@ import com.nahuel.movieapp.R
 import com.nahuel.movieapp.data.modelApi.Movie
 import com.nahuel.movieapp.databinding.UpcomingItemBinding
 
-class UpcomingAdapter( var movies: List<Movie>) : RecyclerView.Adapter<UpcomingAdapter.UpcomingViewHolder>() {
+class UpcomingAdapter(
+    private var movies: List<Movie>,
+    private val onItemClickUpcomingListener: OnClickUpcomingListener
+) : RecyclerView.Adapter<UpcomingAdapter.UpcomingViewHolder>() {
+
+    interface OnClickUpcomingListener{
+        fun onItemClickUpcoming(movie: Movie)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UpcomingViewHolder {
         return UpcomingViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.upcoming_item, parent,false))
@@ -26,6 +33,8 @@ class UpcomingAdapter( var movies: List<Movie>) : RecyclerView.Adapter<UpcomingA
         private val binding = UpcomingItemBinding.bind(view)
 
         fun render(movie: Movie){
+            binding.ivUpcoming.setOnClickListener { onItemClickUpcomingListener.onItemClickUpcoming(movie) }
+
             Glide.with(binding.ivUpcoming.context)
                 .load("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
                 .into(binding.ivUpcoming)

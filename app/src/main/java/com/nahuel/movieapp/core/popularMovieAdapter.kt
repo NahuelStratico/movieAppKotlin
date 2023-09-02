@@ -39,7 +39,6 @@ class PopularMoviesAdapter(
         private val binding = PopularMovieItemBinding.bind(view)
 
         fun bind(movie: Movie) {
-            //binding.tvTitle.text = movie.title
             binding.ivItem.setOnClickListener { itemClickListener.onItemClick(movie) }
 
             Glide.with(binding.ivItem.context)
