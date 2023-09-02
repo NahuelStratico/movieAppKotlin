@@ -3,4 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background_main">#323131</color>
+    <color name="bg_selected">#F57C00</color>
+    <color name="bg_card">#787878</color>
 </resources>

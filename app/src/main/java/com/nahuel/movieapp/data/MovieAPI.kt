@@ -11,13 +11,18 @@ import retrofit2.http.Url
 
 interface MovieAPI {
 
-    //Get Popular
+
     @GET("movie/popular?")
     suspend fun listPopularMovies(@Query("api_key") apiKey: String): MovieDbResult
 
-    //Get Now Playing
     @GET("movie/now_playing?")
     suspend fun nowPlayingMovies(@Query("api_key") apiKey: String): MovieDbResult
+
+    @GET("movie/upcoming?")
+    suspend fun upcomingMovies(@Query("api_key") apiKey: String) : MovieDbResult
+
+    @GET("movie/top_rated?")
+    suspend fun topRatedMovies(@Query("api_key") apiKey: String) : MovieDbResult
 
     //Search movie
     @GET

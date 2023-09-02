@@ -16,6 +16,7 @@ class PopularMoviesAdapter(
 
     interface OnPopularMovieClickListener{
         fun onItemClick(movie: Movie)
+
     }
 
    // Pinto la vista en Recycler
